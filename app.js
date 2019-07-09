@@ -4,8 +4,6 @@ const knex = require('knex');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 
-// const PORT = 3000;
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -19,15 +17,6 @@ const db = knex({
 		ssl: true
 	}
 });
-
-// console.log(
-// 	db
-// 		.select('*')
-// 		.from('users')
-// 		.then(data => {
-// 			console.log(data);
-// 		})
-// );
 
 // END POINTS
 // /
