@@ -4,7 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 
-const PORT = 3000;
+// const PORT = 3000;
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -116,6 +116,6 @@ app.get('/user/:id', (req, res) => {
 		});
 });
 
-app.listen(PORT, () => {
-	console.log('Server running on port ', PORT);
+app.listen(process.env.PORT || 3000, () => {
+	console.log(`Server running on port ${process.env.PORT}`);
 });
