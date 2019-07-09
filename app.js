@@ -15,10 +15,8 @@ app.use(cors());
 const db = knex({
 	client: 'pg',
 	connection: {
-		host: '127.0.0.1',
-		user: 'postgres',
-		password: 'admin',
-		database: 'find_my_face'
+		connectionString: process.env.DATABASE_URL,
+		ssl: true
 	}
 });
 
@@ -32,6 +30,10 @@ const db = knex({
 // );
 
 // END POINTS
+// /
+app.get('/', (req, res) => {
+	res.send('API for FindMyFace.');
+});
 // /signin
 app.post('/signin', (req, res) => {
 	const { email, password } = req.body;
