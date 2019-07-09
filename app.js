@@ -34,6 +34,7 @@ const db = knex({
 app.get('/', (req, res) => {
 	res.send('API for FindMyFace.');
 });
+
 // /signin
 app.post('/signin', (req, res) => {
 	const { email, password } = req.body;
