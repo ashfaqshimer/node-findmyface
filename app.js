@@ -2,7 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const knex = require('knex');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+
+// Import controllers
+const imageController = require('./controllers/image');
+const signInController = require('./controllers/signin');
+const registerController = require('./controllers/register');
+const profileController = require('./controllers/profile');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -26,88 +31,25 @@ app.get('/', (req, res) => {
 
 // /signin
 app.post('/signin', (req, res) => {
-	const { email, password } = req.body;
-	db.select('email', 'hash')
-		.from('login')
-		.where('email', '=', email)
-		.then(data => {
-			const isValid = bcrypt.compareSync(password, data[0].hash);
-			if (isValid) {
-				return db
-					.select('*')
-					.from('users')
-					.where('email', '=', email)
-					.then(user => {
-						res.json(user[0]);
-					})
-					.catch(err => {
-						res.status(400).json('Unable to fetch user');
-					});
-			}
-		});
+	signInController.handleSignIn(req, res, db);
 });
 
 // /register
 app.post('/register', (req, res) => {
-	const { email, name, password } = req.body;
-	const hash = bcrypt.hashSync(password, 10);
-	db.transaction(trx => {
-		trx
-			.insert({ hash, email })
-			.into('login')
-			.returning('email')
-			.then(loginEmail => {
-				return trx('users')
-					.returning('*')
-					.insert({
-						email: loginEmail[0],
-						name,
-						joined: new Date()
-					})
-					.then(response => {
-						res.json(response[0]);
-					});
-			})
-			.then(trx.commit)
-			.catch(trx.rollback);
-	}).catch(err => {
-		res.status(400).json('Unable to register', err);
-	});
+	registerController.handleRegister(req, res, db);
 });
 
 // /image
 app.put('/image', (req, res) => {
-	const id = req.body.id;
-	db('users')
-		.where('id', '=', id)
-		.increment('entries', 1)
-		.returning('entries')
-		.then(entries => {
-			res.json(entries[0]);
-		})
-		.catch(err => {
-			res.status(400).json('Error getting entries');
-		});
+	imageController.handleImage(req, res, db);
 });
 
 // /user/:id
 app.get('/user/:id', (req, res) => {
-	const id = req.params.id;
-	db.select('*')
-		.from('users')
-		.where({ id })
-		.then(user => {
-			if (user.length) {
-				res.json(user[0]);
-			} else {
-				res.status(400).json('Not found');
-			}
-		})
-		.catch(err => {
-			res.status(400).json('Error getting user');
-		});
+	profileController.getProfile(req, res, db);
 });
 
-app.listen(process.env.PORT || 3000, () => {
+// SERVER
+app.listen(process.env.PORT || 4000, () => {
 	console.log(`Server running on port ${process.env.PORT}`);
 });
