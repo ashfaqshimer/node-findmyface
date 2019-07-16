@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const knex = require('knex');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 // Import controllers
 const imageController = require('./controllers/image');
@@ -16,10 +17,10 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const db = knex({
-	client: 'pg',
-	connection: {
-		connectionString: process.env.DATABASE_URL,
-		ssl: true
+	client     : 'pg',
+	connection : {
+		connectionString : process.env.DATABASE_URL,
+		ssl              : true
 	}
 });
 
@@ -31,7 +32,7 @@ app.get('/', (req, res) => {
 
 // /signin
 app.post('/signin', (req, res) => {
-	signInController.handleSignIn(req, res, db);
+	signInController.handleSignIn(req, res, db, bcrypt);
 });
 
 // /register
