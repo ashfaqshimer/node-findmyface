@@ -16,4 +16,22 @@ const getProfile = (req, res, db) => {
 		});
 };
 
-module.exports = { getProfile };
+const postProfile = (req, res, db) => {
+	const { id } = req.params;
+	const { name } = req.body.formInput;
+	db('users')
+		.where({ id })
+		.update({ name })
+		.then((response) => {
+			if (response) {
+				res.json('success');
+			} else {
+				res.status(400).json('unable to update');
+			}
+		})
+		.catch((err) => {
+			res.status(400).json('error updating user');
+		});
+};
+
+module.exports = { getProfile, postProfile };
